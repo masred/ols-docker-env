@@ -3,12 +3,12 @@ version: "3.8"
 services:
   mysql:
     image: mariadb:11.4
-    command: ["--max-allowed-packet=512M"]
+    command: ["--max-allowed-packet=4G"]
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=$SERVICE_PASSWORD_ROOT_MYSQL
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=$SERVICE_USER_MYSQL
+      - MYSQL_PASSWORD=$SERVICE_PASSWORD_MYSQL
     volumes:
       - mysql_data:/var/lib/mysql
     restart: always
@@ -37,13 +37,10 @@ services:
       - lsws_logs:/usr/local/lsws/logs/
     restart: always
     environment:
-      TZ: ${TimeZone}
+      - SERVICE_FQDN_WORDPRESS
+      - TZ=$TimeZone
     networks:
       - default
-    labels:
-      - "coolify.proxy=true"
-      - "coolify.port=80"
-      # - "coolify.domain=yourdomain.com"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 10s
